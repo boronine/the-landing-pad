@@ -16,3 +16,9 @@ Using a free trial of [poly.cam](https://poly.cam/) on iPhone I made a LiDAR sca
 
 ![Scan 1 zoom out](2025-06-13-screenshot1.png)
 ![Scan 1 rocks](2025-06-13-screenshot2.png)
+
+# Photogrammetry: 2025-06-14.stl
+
+This scan is using the camera without LiDAR. As it turns out this is more precise.
+
+![Scan 2](2025-06-14.jpg)
