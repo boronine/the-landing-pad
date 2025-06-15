@@ -12,10 +12,7 @@ of the [world's first UFO Landing Pad](https://www.stpaul.ca/visitors/ufo-landin
 
 # LiDAR scan: 2025-06-13.stl
 
-Using a free trial of [poly.cam](https://poly.cam/) on iPhone I made a LiDAR scan. Seems this is a good way to capture the rocks under the landing pad. The rest of the structure should probably be modeled from scratch using measurements from the scan.
+Using a free trial of [poly.cam](https://poly.cam/) on iPhone I made a LiDAR scan. Seems this is a good way to capture the rocks under the landing pad. The rest of the structure might need to be modeled from scratch, using relative measurements from the scan.
 
-![Scan 1 zoom out](IMG_1594.png)
-![Scan 1 rocks](IMG_1595.png)
-
-
-
+![Scan 1 zoom out](2025-06-13-screenshot1.png)
+![Scan 1 rocks](2025-06-13-screenshot2.png)
