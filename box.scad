@@ -192,6 +192,45 @@ for (i = [0 : n_segments - 1]) {
         }
     }
 
+// Transition shape: interpolates from the middle of the column (circle)
+// to the bottom of the platform (ellipse) with an inward-curved profile.
+// Uses pow(t, 2) so the waist stays narrow near the column,
+// then flares outward to meet the elliptical platform.
+
+// Non-linear blend: p>1 → inward curve (concave), p=1 → linear cone
+function blend(t) = pow(t, 3);
+
+n_transition = 30;
+transition_z0 = cylinder_h / 2;
+transition_z1 = cylinder_h;
+transition_dz = (transition_z1 - transition_z0) / n_transition;
+
+// Radii at a given z parameter t (0 = bottom/circle, 1 = top/ellipse)
+function rx_at(t) = cylinder_d / 2 + (oval_x / 2 - cylinder_d / 2) * blend(t);
+function ry_at(t) = cylinder_d / 2 + (oval_y / 2 - cylinder_d / 2) * blend(t);
+
+color("lightblue")
+for (i = [0 : n_transition - 1]) {
+    z0 = transition_z0 + i * transition_dz;
+    z1 = z0 + transition_dz;
+    t0 = i / n_transition;
+    t1 = (i + 1) / n_transition;
+
+    rx0 = rx_at(t0);
+    ry0 = ry_at(t0);
+    rx1 = rx_at(t1);
+    ry1 = ry_at(t1);
+
+    hull() {
+        translate([0, 0, z0])
+            scale([rx0, ry0, 1])
+                cylinder(r = 1, h = 0.2, center = true, $fn = 128);
+        translate([0, 0, z1])
+            scale([rx1, ry1, 1])
+                cylinder(r = 1, h = 0.2, center = true, $fn = 128);
+    }
+}
+
 // Central cylinder — diameter 120cm, height 240cm
 translate([0, 0, cylinder_h / 2]) {
     cylinder(d = cylinder_d, h = cylinder_h, center = true, $fn = 128);
