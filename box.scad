@@ -136,6 +136,34 @@ for (y_pos = [box_y_offset, -box_y_offset]) {
     }
 }
 
+// Wall at the back of the oval — a continuous curved wall following the oval's contour,
+// covering the region where fence segments 8–12 were removed.
+// Taller than the fence and flush with the outer edge of the platform.
+wall_height = box_depth;      // 150cm — taller than the fence (box_width ≈ 74cm)
+wall_thickness = box_height;  // same radial thickness as fence segments
+
+module back_wall() {
+    // Wall rises vertically from the platform edge — outer face flush with platform edge,
+    // thickness extends inward, bottom sits directly on the platform surface.
+    translate([0, 0, cylinder_h + oval_z + wall_height / 2]) {
+        intersection() {
+            linear_extrude(height = wall_height, center = true) {
+                difference() {
+                    // Outer boundary — exactly at the platform edge
+                    scale([a, b])
+                        circle(r = 1, $fn = 256);
+                    // Inner boundary — thickness goes inward from the edge
+                    scale([a - wall_thickness, b - wall_thickness])
+                        circle(r = 1, $fn = 256);
+                }
+            }
+            // Keep only the back portion (negative x = 9 o'clock)
+            translate([-oval_x / 2, 0, 0])
+                cube([oval_x, oval_y * 3, wall_height * 2], center = true);
+        }
+    }
+}
+
 // Fence segments placed along the oval's perimeter with equal arc-length gaps
 // Uses numerical integration to find 20 evenly-spaced positions on the ellipse perimeter
 // Longest side (150cm) runs tangentially, shortest (15.8cm) points radially
@@ -191,6 +219,10 @@ for (i = [0 : n_segments - 1]) {
             }
         }
     }
+
+// Back wall — placed after a/b are defined; covers the gap left by removed fence segments 8–12
+color("lightgreen")
+    back_wall();
 
 // Transition shape: interpolates from the middle of the column (circle)
 // to the bottom of the platform (ellipse) with an inward-curved profile.
