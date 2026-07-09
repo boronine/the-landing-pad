@@ -1,6 +1,8 @@
 # The Landing Pad
 
-The goal of this project is to produce a [“No Rights Reserved”](https://creativecommons.org/public-domain/cc0/) 3D model
+![Landing Pad model](box.png)
+
+The goal of this project is to produce a ["No Rights Reserved"](https://creativecommons.org/public-domain/cc0/) 3D model
 of the [world's first UFO Landing Pad](https://www.stpaul.ca/visitors/ufo-landing-pad), built in 1967 in the town of [St. Paul, Alberta, Canada](https://en.wikipedia.org/wiki/St._Paul,_Alberta)
 
 # 3D Printer
