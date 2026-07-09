@@ -139,15 +139,15 @@ for (y_pos = [box_y_offset, -box_y_offset]) {
 // Wall at the back of the oval — a continuous curved wall following the oval's contour,
 // covering the region where fence segments 8–12 were removed.
 // Taller than the fence and flush with the outer edge of the platform.
-wall_height = box_depth;      // 150cm — taller than the fence (box_width ≈ 74cm)
+wall_height = 240;            // 2.4m tall
 wall_thickness = box_height;  // same radial thickness as fence segments
 
-module back_wall() {
+module back_wall(start_angle, end_angle) {
     // Wall rises vertically from the platform edge — outer face flush with platform edge,
     // thickness extends inward, bottom sits directly on the platform surface.
     translate([0, 0, cylinder_h + oval_z + wall_height / 2]) {
-        intersection() {
-            linear_extrude(height = wall_height, center = true) {
+        linear_extrude(height = wall_height, center = true) {
+            intersection() {
                 difference() {
                     // Outer boundary — exactly at the platform edge
                     scale([a, b])
@@ -156,10 +156,64 @@ module back_wall() {
                     scale([a - wall_thickness, b - wall_thickness])
                         circle(r = 1, $fn = 256);
                 }
+                // Angular wedge to cover only the gap between existing fence segments
+                pie_slice(max(a, b) * 1.5, start_angle, end_angle);
             }
-            // Keep only the back portion (negative x = 9 o'clock)
-            translate([-oval_x / 2, 0, 0])
-                cube([oval_x, oval_y * 3, wall_height * 2], center = true);
+        }
+    }
+}
+
+// Helper: 2D pie-slice polygon for angular cutting
+module pie_slice(r, angle_start, angle_end) {
+    polygon(concat(
+        [[0, 0]],
+        [for (a = [angle_start : 1 : angle_end]) [r * cos(a), r * sin(a)]]
+    ));
+}
+
+// Roof over the wall — 1m deep, extending inward from the top of the wall
+roof_depth = 40;  // 0.4m inward
+roof_thickness = box_height;  // same thickness as the wall
+
+module back_roof(start_angle, end_angle) {
+    // Sits on top of the wall
+    translate([0, 0, cylinder_h + oval_z + wall_height + roof_thickness / 2]) {
+        linear_extrude(height = roof_thickness, center = true) {
+            intersection() {
+                difference() {
+                    // Outer edge — flush with wall outer face (platform edge)
+                    scale([a, b])
+                        circle(r = 1, $fn = 256);
+                    // Inner edge — 1m inward from the outer edge
+                    scale([a - roof_depth, b - roof_depth])
+                        circle(r = 1, $fn = 256);
+                }
+                pie_slice(max(a, b) * 1.5, start_angle, end_angle);
+            }
+        }
+    }
+}
+
+// Lip hanging down from the inner edge of the roof
+lip_height = box_height;      // downward extension
+lip_thickness = box_height;   // radial thickness
+
+module roof_lip(start_angle, end_angle) {
+    // Hangs from the roof bottom, inner face flush with roof inner edge,
+    // lip extends outward underneath the roof toward the wall.
+    translate([0, 0, cylinder_h + oval_z + wall_height - lip_height / 2]) {
+        linear_extrude(height = lip_height, center = true) {
+            intersection() {
+                difference() {
+                    // Outer edge — extends outward under the roof toward the wall
+                    scale([a - roof_depth + lip_thickness, b - roof_depth + lip_thickness])
+                        circle(r = 1, $fn = 256);
+                    // Inner edge — flush with the roof's inner edge
+                    scale([a - roof_depth, b - roof_depth])
+                        circle(r = 1, $fn = 256);
+                }
+                pie_slice(max(a, b) * 1.5, start_angle, end_angle);
+            }
         }
     }
 }
@@ -220,9 +274,24 @@ for (i = [0 : n_segments - 1]) {
         }
     }
 
-// Back wall — placed after a/b are defined; covers the gap left by removed fence segments 8–12
+// Back wall — covers the gap left by removed fence segments 8–12.
+// Boundaries are the midpoints between segments 7-8 and 12-13 to avoid overlap.
+// find_theta returns parametric angles; convert to geometric for the pie-slice cut.
+function param_to_geom(theta) = let(
+    g = atan2(b * sin(theta), a * cos(theta))
+) g < 0 ? g + 360 : g;
+
+back_wall_start = param_to_geom(find_theta(7.5 * target_arc, 0));
+back_wall_end   = param_to_geom(find_theta(12.5 * target_arc, 0));
+
 color("lightgreen")
-    back_wall();
+    back_wall(back_wall_start, back_wall_end);
+
+color("lightblue")
+    back_roof(back_wall_start, back_wall_end);
+
+color("lightblue")
+    roof_lip(back_wall_start, back_wall_end);
 
 // Transition shape: interpolates from the middle of the column (circle)
 // to the bottom of the platform (ellipse) with an inward-curved profile.
