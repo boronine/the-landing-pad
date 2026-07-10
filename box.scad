@@ -337,7 +337,7 @@ for (i = [0 : n_transition - 1]) {
 num_steps = 7;
 total_rise = cylinder_h + oval_z;  // 260cm ground to platform top
 step_rise = total_rise / num_steps; // ~37.1cm vertical spacing
-step_thickness = step_rise * 0.6;  // ~22.3cm — thicker levitating steps
+step_thickness = step_rise * 0.4;  // ~14.9cm — thinner levitating steps
 step_run = 34;
 
 // Stair width fits between the two entrance fence segments on the rectangle
