@@ -332,6 +332,87 @@ for (i = [0 : n_transition - 1]) {
     }
 }
 
+// Stairs — a single wide staircase facing the entrance gap head-on,
+// with levitating steps and blocky handrails on both sides.
+num_steps = 7;
+total_rise = cylinder_h + oval_z;  // 260cm ground to platform top
+step_rise = total_rise / num_steps; // ~37.1cm vertical spacing
+step_thickness = step_rise * 0.6;  // ~22.3cm — thicker levitating steps
+step_run = 34;
+
+// Stair width fits between the two entrance fence segments on the rectangle
+stair_width = rect_y - 2 * outer_rim - box_height;
+platform_edge_x = rect_center_x + rect_x / 2;
+
+// Railing parameters — thinner, matching fence thickness (box_height ≈ 15.8cm)
+post_r = box_height / 2;     // ~7.9cm radius → 15.8cm square posts
+rail_r = box_height * 0.35;  // ~5.5cm radius → 11cm square handrail
+handrail_h = 85;             // handrail height above step surface
+post_inset = 6;              // inset from stair edge
+
+module stair_railing() {
+    for (y_side = [-1, 1]) {
+        y_pos = y_side * (stair_width / 2 - post_inset);
+
+        // Continuous blocky handrail — hulled cubes along the stair slope
+        for (i = [0 : num_steps - 2]) {
+            sx1 = platform_edge_x + (num_steps - i - 0.5) * step_run;
+            sz1 = (i + 0.5) * step_rise + handrail_h;
+            sx2 = platform_edge_x + (num_steps - i - 1.5) * step_run;
+            sz2 = (i + 1.5) * step_rise + handrail_h;
+
+            hull() {
+                translate([sx1, y_pos, sz1])
+                    cube(rail_r * 2, center = true);
+                translate([sx2, y_pos, sz2])
+                    cube(rail_r * 2, center = true);
+            }
+        }
+
+        // Vertical blocky posts sitting on top of each levitating step
+        for (i = [0 : num_steps - 1]) {
+            sx = platform_edge_x + (num_steps - i - 0.5) * step_run;
+            step_top_z = (i + 0.5) * step_rise + step_thickness / 2;
+            post_h = handrail_h - step_thickness / 2;
+            post_center_z = step_top_z + post_h / 2;
+
+            translate([sx, y_pos, post_center_z]) {
+                cube([post_r * 2, post_r * 2, post_h], center = true);
+            }
+        }
+
+        // Top extension — railing curves to meet the platform
+        sx_top = platform_edge_x + 0.5 * step_run;
+        sz_top = (num_steps - 0.5) * step_rise + handrail_h;
+        hull() {
+            translate([sx_top, y_pos, sz_top])
+                cube(rail_r * 2, center = true);
+            translate([platform_edge_x - step_run * 0.3, y_pos, total_rise + handrail_h])
+                cube(rail_r * 2, center = true);
+        }
+        // End post at platform (sitting on platform surface)
+        platform_post_h = handrail_h;
+        translate([platform_edge_x - step_run * 0.3, y_pos, total_rise + platform_post_h / 2]) {
+            cube([post_r * 2, post_r * 2, platform_post_h], center = true);
+        }
+    }
+}
+
+// Steps
+color("lightyellow")
+for (i = [0 : num_steps - 1]) {
+    sx = platform_edge_x + (num_steps - i - 0.5) * step_run;
+    sz = (i + 0.5) * step_rise;
+
+    translate([sx, 0, sz]) {
+        cube([step_run, stair_width, step_thickness], center = true);
+    }
+}
+
+// Railings
+color("lightyellow")
+stair_railing();
+
 // Central cylinder — diameter 120cm, height 240cm
 translate([0, 0, cylinder_h / 2]) {
     cylinder(d = cylinder_d, h = cylinder_h, center = true, $fn = 128);
