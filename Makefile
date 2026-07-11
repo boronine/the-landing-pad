@@ -27,7 +27,7 @@ $(TARGET): $(SOURCE)
 # Wildcard rule: generate STL from OBJ
 %.stl: %.obj
 	@echo "Converting $< to $@..."
-	@echo 'import("$<");' | openscad -o $@ -
+	@printf 'import("%s");\n' '$<' | openscad -o '$@' -
 	@echo "Generated $@"
 
 # Generate all STL files from OBJ files
