@@ -1,6 +1,7 @@
 # Makefile for rendering the 3D model
 # Usage:
-#   make                - Generate index.png and index.stl from index.scad
+#   make                - Generate index.stl from index.scad
+#   make png            - Generate index.png from index.scad
 #   make <file>.stl     - Generate STL from corresponding OBJ file
 #   make stls           - Generate all STL files from OBJ files
 #   make clean          - Remove generated files
@@ -11,8 +12,11 @@ TARGET_STL = index.stl
 # Source SCAD file
 SOURCE = index.scad
 
-# Default target: generate both PNG and STL
-all: $(TARGET_PNG) $(TARGET_STL)
+# Default target: generate STL (what the landing page needs)
+all: $(TARGET_STL)
+
+# Optional target for PNG render
+png: $(TARGET_PNG)
 
 # Rule to generate PNG from SCAD
 $(TARGET_PNG): $(SOURCE)
@@ -48,10 +52,11 @@ clean:
 # Help target
 help:
 	@echo "Makefile targets:"
-	@echo "  make                - Generate index.png and index.stl from index.scad"
+	@echo "  make                - Generate index.stl from index.scad"
+	@echo "  make png            - Generate index.png from index.scad"
 	@echo "  make <file>.stl     - Generate STL from OBJ (e.g., make 2025-06-13.stl)"
 	@echo "  make stls           - Generate all STL files from OBJ files"
 	@echo "  make clean          - Remove generated files"
 	@echo "  make help           - Show this help message"
 
-.PHONY: all clean help stls
+.PHONY: all png clean help stls

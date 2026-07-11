@@ -27,13 +27,13 @@ jobs:
           path: /var/cache/apt/archives
           key: apt-${{ runner.os }}-${{ runner.arch }}-ubuntu-24.04-v1
 
-      - name: Install packages
+      - name: Install OpenSCAD
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y openscad xvfb
+          sudo apt-get install -y openscad
 
       - name: Generate files
-        run: xvfb-run -a make
+        run: make
 
       - uses: actions/upload-pages-artifact@v5
         with:
