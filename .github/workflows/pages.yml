@@ -39,19 +39,19 @@ jobs:
           echo "Generated index.png:"
           ls -lh index.png
 
-        - name: Generate STL files from OBJ with tracing
-          run: |
-            echo "Checking Makefile contents around STL rule:"
-            sed -n '27,32p' Makefile
-            echo ""
-            echo "Testing make recipe expansion:"
-            make -n 2025-06-13.stl
-            echo ""
-            echo "Running actual STL generation:"
-            make 2025-06-13.stl || echo "FAILED"
-            echo ""
-            echo "All STL files:"
-            ls -lh *.stl 2>/dev/null || echo "No STL files found"
+      - name: Generate STL files from OBJ with tracing
+        run: |
+          echo "Checking Makefile contents around STL rule:"
+          sed -n '27,32p' Makefile
+          echo ""
+          echo "Testing make recipe expansion:"
+          make -n 2025-06-13.stl
+          echo ""
+          echo "Running actual STL generation:"
+          make 2025-06-13.stl || echo "FAILED"
+          echo ""
+          echo "All STL files:"
+          ls -lh *.stl 2>/dev/null || echo "No STL files found"
 
       - name: List all files for debugging
         run: |
