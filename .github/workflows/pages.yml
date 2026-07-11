@@ -19,17 +19,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Restore apt package cache
-        id: apt-cache
-        uses: actions/cache@v4
-        with:
-          path: /var/cache/apt/archives
-          key: ${{ runner.os }}-apt-${{ hashFiles('.github/workflows/pages.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-apt-
+      - uses: actions/checkout@v5
 
       - name: Install OpenSCAD and xvfb
         run: |
@@ -39,8 +29,7 @@ jobs:
       - name: Generate files
         run: xvfb-run -a make
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: ./
 
@@ -54,6 +43,5 @@ jobs:
       pages: write
       id-token: write
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - id: deployment
+        uses: actions/deploy-pages@v5
