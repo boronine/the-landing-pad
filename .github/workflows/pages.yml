@@ -21,12 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Cache APT archives
-        uses: actions/cache@v6
-        with:
-          path: /var/cache/apt/archives
-          key: apt-${{ runner.os }}-${{ runner.arch }}-ubuntu-24.04-v1
-
       - name: Install OpenSCAD
         run: |
           sudo apt-get update -qq
