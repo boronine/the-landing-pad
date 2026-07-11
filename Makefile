@@ -16,10 +16,10 @@ all: $(TARGET)
 # Rule to generate PNG from SCAD
 $(TARGET): $(SOURCE)
 	@echo "Rendering $(SOURCE) to $(TARGET)..."
-	@openscad \
+	openscad \
 	    -o $(TARGET) \
 	    --imgsize=1920,1080 \
-	    --camera=5000,0,170,0,0,300 \
+	    --camera=3535,-3535,800,0,0,300 \
 	    --colorscheme=Tomorrow \
 	    $(SOURCE)
 	@echo "Rendered $(TARGET)"
