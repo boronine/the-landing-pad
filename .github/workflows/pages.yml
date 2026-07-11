@@ -25,18 +25,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install OpenSCAD
+      - name: Install OpenSCAD and xvfb
         run: |
-          echo "Installing OpenSCAD..."
+          echo "Installing OpenSCAD and xvfb..."
           sudo apt-get update
-          sudo apt-get install -y openscad
+          sudo apt-get install -y openscad xvfb
           openscad --version
 
-      - name: Generate rendered image
+      - name: Generate rendered image with xvfb
         run: |
-          echo "Running make to generate index.png..."
-          make
-          echo "Generated files:"
+          echo "Running make with xvfb to generate index.png..."
+          xvfb-run -a make
+          echo "Generated index.png:"
           ls -lh index.png
 
       - name: Generate STL files from OBJ
