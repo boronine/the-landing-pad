@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Landing Pad - 3D Model</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stl-viewer@3.2.0/dist/stl-viewer.min.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -28,6 +30,14 @@
             height: auto;
             border-radius: 4px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        #stl-viewer-container {
+            width: 100%;
+            height: 600px;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: #1a1a2e;
+            display: block;
         }
         .scans-grid {
             display: grid;
@@ -78,7 +88,13 @@
         <h1>The Landing Pad</h1>
         <p>A 3D model of the world's first UFO Landing Pad built in 1967 in St. Paul, Alberta, Canada.</p>
         
-        <h2>3D Model Preview</h2>
+        <h2>Interactive 3D Model</h2>
+        <div id="stl-viewer-container"></div>
+        <p><em>Drag to rotate, scroll to zoom. Interactive STL viewer powered by Three.js</em></p>
+    </div>
+
+    <div class="container">
+        <h2>Static Preview</h2>
         <img src="index.png" alt="3D Model of The Landing Pad" class="model-image">
         <p><em>Generated with OpenSCAD</em></p>
     </div>
@@ -138,5 +154,36 @@ make clean</code></pre>
         <h2>License</h2>
         <p>This project is released under <a href="LICENSE">CC0 - No Rights Reserved</a>.</p>
     </div>
+
+    <script>
+        // Initialize STL viewer
+        const stlViewer = new StlViewer(
+            document.getElementById('stl-viewer-container'),
+            {
+                models: [
+                    {
+                        filename: 'index.stl',
+                        display_name: 'The Landing Pad',
+                        rotation: { x: -Math.PI / 2, y: 0, z: Math.PI / 4 },
+                        position: { x: 0, y: 0, z: 0 },
+                        scale: 1,
+                        color: '#4a90e2'
+                    }
+                ],
+                camera_position: {
+                    x: 100,
+                    y: 100,
+                    z: 200
+                },
+                grid: true,
+                axes: true,
+                all_models: true,
+                auto_rotate: false,
+                controls: {
+                    enabled: true
+                }
+            }
+        );
+    </script>
 </body>
 </html>

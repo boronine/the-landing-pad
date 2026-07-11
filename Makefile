@@ -1,28 +1,35 @@
 # Makefile for rendering the 3D model
 # Usage:
-#   make                - Generate index.png from index.scad
+#   make                - Generate index.png and index.stl from index.scad
 #   make <file>.stl     - Generate STL from corresponding OBJ file
 #   make stls           - Generate all STL files from OBJ files
 #   make clean          - Remove generated files
 
-# Target PNG file
-TARGET = index.png
+# Target files
+TARGET_PNG = index.png
+TARGET_STL = index.stl
 # Source SCAD file
 SOURCE = index.scad
 
-# Default target
-all: $(TARGET)
+# Default target: generate both PNG and STL
+all: $(TARGET_PNG) $(TARGET_STL)
 
 # Rule to generate PNG from SCAD
-$(TARGET): $(SOURCE)
-	@echo "Rendering $(SOURCE) to $(TARGET)..."
+$(TARGET_PNG): $(SOURCE)
+	@echo "Rendering $(SOURCE) to $(TARGET_PNG)..."
 	openscad \
-	    -o $(TARGET) \
+	    -o $(TARGET_PNG) \
 	    --imgsize=1920,1080 \
 	    --camera=3535,-3535,800,0,0,300 \
 	    --colorscheme=Tomorrow \
 	    $(SOURCE)
-	@echo "Rendered $(TARGET)"
+	@echo "Rendered $(TARGET_PNG)"
+
+# Rule to generate STL from SCAD
+$(TARGET_STL): $(SOURCE)
+	@echo "Exporting $(SOURCE) to $(TARGET_STL)..."
+	openscad -o $(TARGET_STL) $(SOURCE)
+	@echo "Exported $(TARGET_STL)"
 
 # Wildcard rule: generate STL from OBJ
 %.stl: %.obj
@@ -35,13 +42,13 @@ stls: $(patsubst %.obj,%.stl,$(wildcard *.obj))
 
 # Clean generated files
 clean:
-	@rm -f $(TARGET) *.stl
+	@rm -f $(TARGET_PNG) $(TARGET_STL) *.stl
 	@echo "Cleaned generated files"
 
 # Help target
 help:
 	@echo "Makefile targets:"
-	@echo "  make                - Generate index.png from index.scad"
+	@echo "  make                - Generate index.png and index.stl from index.scad"
 	@echo "  make <file>.stl     - Generate STL from OBJ (e.g., make 2025-06-13.stl)"
 	@echo "  make stls           - Generate all STL files from OBJ files"
 	@echo "  make clean          - Remove generated files"
