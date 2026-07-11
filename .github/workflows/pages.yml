@@ -19,9 +19,15 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - name: Install OpenSCAD and xvfb
+      - name: Cache APT archives
+        uses: actions/cache@v6
+        with:
+          path: /var/cache/apt/archives
+          key: apt-${{ runner.os }}-${{ runner.arch }}-ubuntu-24.04-v1
+
+      - name: Install packages
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y openscad xvfb
