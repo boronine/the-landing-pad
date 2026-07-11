@@ -33,18 +33,26 @@ jobs:
           openscad --version
 
       - name: Generate rendered image with xvfb
-        run: |
-          echo "Running make with xvfb to generate index.png..."
-          xvfb-run -a make
-          echo "Generated index.png:"
-          ls -lh index.png
+        - name: Run xvfb to generate rendered image
+          run: |
+            echo "Running make with xvfb to generate index.png..."
+            xvfb-run -a make
+            echo "Generated index.png:"
+            ls -lh index.png
 
-      - name: Generate STL files from OBJ
-        run: |
-          echo "Running make stls..."
-          make stls
-          echo "Generated STL files:"
-          ls -lh *.stl 2>/dev/null || echo "No STL files generated"
+        - name: Generate STL files from OBJ with tracing
+          run: |
+            echo "Checking Makefile contents around STL rule:"
+            sed -n '27,32p' Makefile
+            echo ""
+            echo "Testing make recipe expansion:"
+            make -n 2025-06-13.stl
+            echo ""
+            echo "Running actual STL generation:"
+            make 2025-06-13.stl || echo "FAILED"
+            echo ""
+            echo "All STL files:"
+            ls -lh *.stl 2>/dev/null || echo "No STL files found"
 
       - name: List all files for debugging
         run: |
