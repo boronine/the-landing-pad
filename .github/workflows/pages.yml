@@ -32,13 +32,12 @@ jobs:
           sudo apt-get install -y openscad xvfb
           openscad --version
 
-      - name: Generate rendered image with xvfb
-        - name: Run xvfb to generate rendered image
-          run: |
-            echo "Running make with xvfb to generate index.png..."
-            xvfb-run -a make
-            echo "Generated index.png:"
-            ls -lh index.png
+      - name: Run xvfb to generate rendered image
+        run: |
+          echo "Running make with xvfb to generate index.png..."
+          xvfb-run -a make
+          echo "Generated index.png:"
+          ls -lh index.png
 
         - name: Generate STL files from OBJ with tracing
           run: |
