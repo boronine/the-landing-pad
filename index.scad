@@ -344,21 +344,23 @@ color("lightblue")
 // ============================================================================
 // STAIRS - Main staircase accessing the platform
 // ============================================================================
-num_steps = 7;
-total_rise = column_h + ellipse_z;
-step_rise = total_rise / num_steps;
-step_thickness = step_rise * 0.4;
-step_run = 34;
+// Stairs — a single wide staircase facing the entrance gap head-on,
+// with levitating steps and blocky handrails on both sides.
+num_steps = 13;
+total_rise = column_h + ellipse_z;  // 260cm ground to platform top
+step_rise = 16;
+step_thickness = 12;
+step_run = 28;
 
 // Stair width fits between the two entrance fence sections on the rectangle
-stair_width = rect_y - 2 * outer_rim - section_height;
+stair_width = 184;
 platform_edge_x = rect_center_x + rect_x / 2;
 
-// Railing parameters — thinner, matching fence thickness (section_height ≈ 15.8cm)
-post_r = section_height / 2;
-rail_r = section_height * 0.35;
-handrail_h = 85;
-post_inset = 6;
+// Railing parameters — same thickness as the stairs
+post_r = step_thickness / 2;  // 7.5cm radius → 15cm square posts
+rail_r = step_thickness * 0.5; // 7.5cm radius → 15cm square handrail
+handrail_h = 85;               // handrail height above step surface
+post_inset = 6;                // inset from stair edge
 
 module stair_railing() {
     for (y_side = [-1, 1]) {
@@ -379,15 +381,21 @@ module stair_railing() {
             }
         }
 
-        // Vertical blocky posts sitting on top of each levitating step
+        // Posts with curved transition from step to post (no separate block)
         for (i = [0 : num_steps - 1]) {
             sx = platform_edge_x + (num_steps - i - 0.5) * step_run;
             step_top_z = (i + 0.5) * step_rise + step_thickness / 2;
             post_h = handrail_h - step_thickness / 2;
             post_center_z = step_top_z + post_h / 2;
 
-            translate([sx, y_pos, post_center_z]) {
-                cube([post_r * 2, post_r * 2, post_h], center = true);
+            // Hull creating a front-only curve — footing extends in +y
+            hull() {
+                // Footing on step — extends forward in +y only
+                translate([sx, y_pos + post_r, step_top_z + post_r / 2])
+                    cube([post_r * 2, post_r * 4, post_r], center = true);
+                // Upper post shaft
+                translate([sx, y_pos, post_center_z])
+                    cube([post_r * 2, post_r * 2, post_h - post_r], center = true);
             }
         }
 
@@ -408,15 +416,39 @@ module stair_railing() {
     }
 }
 
+module jimmy(x, y, z) {
+    // 90° curved railing on both sides — traces from step edge outward and up
+    n = 8;
+    for (y_side = [-1, 1]) {
+        for (j = [0 : n - 2]) {
+            a0 = j / n * 90;
+            a1 = (j + 1) / n * 90;
+            y0 = y_side * (stair_width / 2 + step_thickness * 7 * sin(a0));
+            z0 = z + step_thickness * 7 * (1 - cos(a0));
+            y1 = y_side * (stair_width / 2 + step_thickness * 7 * sin(a1));
+            z1 = z + step_thickness * 7 * (1 - cos(a1));
+            hull() {
+                translate([x, y0, z0])
+                    cube([step_run, step_thickness, step_thickness], center = true);
+                translate([x, y1, z1])
+                    cube([step_run, step_thickness, step_thickness], center = true);
+            }
+        }
+    }
+}
+
 // Steps
 color("lightyellow")
 for (i = [0 : num_steps - 1]) {
     sx = platform_edge_x + (num_steps - i - 0.5) * step_run;
     sz = (i + 0.5) * step_rise;
 
+    // Straight step
     translate([sx, 0, sz]) {
         cube([step_run, stair_width, step_thickness], center = true);
     }
+
+    jimmy(sx, 0, sz);
 }
 
 // Railings
