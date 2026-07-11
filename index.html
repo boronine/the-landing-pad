@@ -13,38 +13,38 @@
 }
 </script>
 <style>
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; color: #333; }
-h1, h2 { color: #2c3e50; }
-.container { background: #fff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,.1); margin-bottom: 20px; }
-#viewer-container { width: 100%; height: 600px; border-radius: 4px; position: relative; overflow: hidden; }
-.viewer-overlay { position: absolute; bottom: 12px; left: 12px; background: rgba(0,0,0,.6); color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 12px; }
-.loading-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: #fff; font-size: 18px; }
-.downloads { display: flex; gap: 10px; flex-wrap: wrap; }
-.downloads a { padding: 8px 16px; background: #3498db; color: #fff; text-decoration: none; border-radius: 4px; font-size: 14px; }
-.downloads a:hover { background: #2980b9; }
+* { margin: 0; padding: 0; }
+body { overflow: hidden; background: #2a2a3e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+canvas { display: block; }
+#overlay {
+position: fixed; bottom: 16px; left: 16px;
+background: rgba(0,0,0,.55); color: #ccc;
+padding: 5px 10px; border-radius: 6px;
+font-size: 13px; line-height: 1.6;
+pointer-events: auto; backdrop-filter: blur(4px);
+max-width: calc(100vw - 32px);
+}
+#overlay a { color: #8cb4ff; text-decoration: none; margin: 0 4px; }
+#overlay a:hover { color: #fff; }
+#overlay .sep { color: #555; margin: 0 6px; }
+#loading {
+position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+color: #aaa; font-size: 20px; pointer-events: none;
+}
 </style>
 </head>
 <body>
 
-<div class="container">
-<h1>The Landing Pad</h1>
-<p>A <a href="https://creativecommons.org/public-domain/cc0/">No Rights Reserved</a> 3D model of the <a href="https://www.stpaul.ca/visitors/ufo-landing-pad">world's first UFO Landing Pad</a>, built in 1967 in <a href="https://en.wikipedia.org/wiki/St._Paul,_Alberta">St. Paul, Alberta, Canada</a>.</p>
+<div id="loading">Loading model…</div>
 
-<h2>Interactive 3D Model</h2>
-<div id="viewer-container">
-<div class="loading-indicator" id="loading">Loading model...</div>
-<div class="viewer-overlay">Drag to rotate · Scroll to zoom · Right-drag to pan</div>
-</div>
-<p><em>Powered by OpenSCAD and Three.js</em></p>
-</div>
-
-<div class="container">
-<h2>Downloads</h2>
-<div class="downloads">
-<a href="index.scad" download>⬇ index.scad</a>
-<a href="index.stl" download>⬇ index.stl</a>
+<div id="overlay">
+<strong>The Landing Pad</strong>
+<span class="sep">·</span>
+Drag to rotate · Scroll to zoom · Right‑drag to pan
+<span class="sep">·</span>
+<a href="index.scad" download>index.scad</a>
+<a href="index.stl" download>index.stl</a>
 <a href="https://github.com/boronine/the-landing-pad">GitHub</a>
-</div>
 </div>
 
 <script type="module">
@@ -52,23 +52,22 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 
-const container = document.getElementById('viewer-container');
 const loadingEl = document.getElementById('loading');
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
-container.appendChild(renderer.domElement);
+document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x2a2a3e);
 scene.fog = new THREE.Fog(0x2a2a3e, 2000, 12000);
 
-const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 10, 20000);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 10, 20000);
 camera.position.set(3535, -3535, 800);
 camera.lookAt(0, 0, 300);
 
@@ -81,26 +80,22 @@ controls.maxDistance = 15000;
 controls.maxPolarAngle = Math.PI / 2 + 0.3;
 controls.update();
 
-const ambientLight = new THREE.AmbientLight(0x8899bb, 1.5);
-scene.add(ambientLight);
+scene.add(new THREE.AmbientLight(0x8899bb, 1.5));
 
-const sunLight = new THREE.DirectionalLight(0xffeedd, 4);
-sunLight.position.set(5000, 3000, 2000);
-sunLight.castShadow = true;
-sunLight.shadow.mapSize.width = 2048;
-sunLight.shadow.mapSize.height = 2048;
-sunLight.shadow.camera.near = 10;
-sunLight.shadow.camera.far = 20000;
-sunLight.shadow.camera.left = -3000;
-sunLight.shadow.camera.right = 3000;
-sunLight.shadow.camera.top = 3000;
-sunLight.shadow.camera.bottom = -3000;
-sunLight.shadow.bias = -0.001;
-scene.add(sunLight);
+const sun = new THREE.DirectionalLight(0xffeedd, 4);
+sun.position.set(5000, 3000, 2000);
+sun.castShadow = true;
+sun.shadow.mapSize.width = sun.shadow.mapSize.height = 2048;
+sun.shadow.camera.near = 10;
+sun.shadow.camera.far = 20000;
+sun.shadow.camera.left = sun.shadow.camera.bottom = -3000;
+sun.shadow.camera.right = sun.shadow.camera.top = 3000;
+sun.shadow.bias = -0.001;
+scene.add(sun);
 
-const fillLight = new THREE.DirectionalLight(0x8899cc, 1.5);
-fillLight.position.set(-2000, 500, -2000);
-scene.add(fillLight);
+const fill = new THREE.DirectionalLight(0x8899cc, 1.5);
+fill.position.set(-2000, 500, -2000);
+scene.add(fill);
 
 const ground = new THREE.Mesh(
 new THREE.PlaneGeometry(10000, 10000),
@@ -111,44 +106,39 @@ ground.position.z = -5;
 ground.receiveShadow = true;
 scene.add(ground);
 
-const grid = new THREE.PolarGridHelper(3000, 32, 24, 64, 0x445566, 0x334455);
-scene.add(grid);
+scene.add(new THREE.PolarGridHelper(3000, 32, 24, 64, 0x445566, 0x334455));
 
 new STLLoader().load('index.stl',
-(geometry) => {
+(g) => {
 loadingEl.style.display = 'none';
-geometry.computeBoundingBox();
+g.computeBoundingBox();
 const c = new THREE.Vector3();
-geometry.boundingBox.getCenter(c);
-geometry.translate(-c.x, -c.y, -c.z);
-geometry.computeVertexNormals();
+g.boundingBox.getCenter(c);
+g.translate(-c.x, -c.y, -c.z);
+g.computeVertexNormals();
 
-const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: 0x8899aa, roughness: 0.6, metalness: 0.3 }));
-// Rotate to stand upright: OpenSCAD Z-up → Three.js Y-up
+const mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: 0x8899aa, roughness: 0.6, metalness: 0.3 }));
 mesh.rotation.x = -Math.PI / 2;
 mesh.rotation.y = Math.PI / 4;
-mesh.castShadow = true;
-mesh.receiveShadow = true;
+mesh.castShadow = mesh.receiveShadow = true;
 scene.add(mesh);
 
-// Compute world-space bounding box after rotation for proper centering
 const box = new THREE.Box3().setFromObject(mesh);
 const mc = new THREE.Vector3();
 box.getCenter(mc);
-// Raise so bottom sits on ground
 mesh.position.y = -box.min.y;
 controls.target.copy(mc);
 controls.target.y += mesh.position.y;
 controls.update();
 },
-(p) => { loadingEl.textContent = `Loading... ${Math.round(p.loaded / p.total * 100)}%`; },
-(e) => { loadingEl.textContent = 'Failed to load model.'; }
+(p) => { loadingEl.textContent = `Loading… ${Math.round(p.loaded / p.total * 100)}%`; },
+() => { loadingEl.textContent = 'Failed to load model.'; }
 );
 
 window.addEventListener('resize', () => {
-camera.aspect = container.clientWidth / container.clientHeight;
+camera.aspect = window.innerWidth / window.innerHeight;
 camera.updateProjectionMatrix();
-renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
 (function animate() {
