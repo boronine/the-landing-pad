@@ -124,14 +124,21 @@ geometry.translate(-c.x, -c.y, -c.z);
 geometry.computeVertexNormals();
 
 const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: 0x8899aa, roughness: 0.6, metalness: 0.3 }));
+// Rotate to stand upright: OpenSCAD Z-up → Three.js Y-up
+mesh.rotation.x = -Math.PI / 2;
+mesh.rotation.y = Math.PI / 4;
 mesh.castShadow = true;
 mesh.receiveShadow = true;
 scene.add(mesh);
 
+// Compute world-space bounding box after rotation for proper centering
 const box = new THREE.Box3().setFromObject(mesh);
 const mc = new THREE.Vector3();
 box.getCenter(mc);
+// Raise so bottom sits on ground
+mesh.position.y = -box.min.y;
 controls.target.copy(mc);
+controls.target.y += mesh.position.y;
 controls.update();
 },
 (p) => { loadingEl.textContent = `Loading... ${Math.round(p.loaded / p.total * 100)}%`; },

@@ -1,35 +1,19 @@
 # Makefile for rendering the 3D model
 # Usage:
 #   make                - Generate index.stl from index.scad
-#   make png            - Generate index.png from index.scad
 #   make <file>.stl     - Generate STL from corresponding OBJ file
 #   make stls           - Generate all STL files from OBJ files
 #   make clean          - Remove generated files
 
-# Target files
-TARGET_PNG = index.png
+# Target
 TARGET_STL = index.stl
-# Source SCAD file
+# Source
 SOURCE = index.scad
 
-# Default target: generate STL (what the landing page needs)
+# Default target
 all: $(TARGET_STL)
 
-# Optional target for PNG render
-png: $(TARGET_PNG)
-
-# Rule to generate PNG from SCAD
-$(TARGET_PNG): $(SOURCE)
-	@echo "Rendering $(SOURCE) to $(TARGET_PNG)..."
-	openscad \
-	    -o $(TARGET_PNG) \
-	    --imgsize=1920,1080 \
-	    --camera=3535,-3535,800,0,0,300 \
-	    --colorscheme=Tomorrow \
-	    $(SOURCE)
-	@echo "Rendered $(TARGET_PNG)"
-
-# Rule to generate STL from SCAD
+# Generate STL from SCAD
 $(TARGET_STL): $(SOURCE)
 	@echo "Exporting $(SOURCE) to $(TARGET_STL)..."
 	openscad -o $(TARGET_STL) $(SOURCE)
@@ -44,19 +28,16 @@ $(TARGET_STL): $(SOURCE)
 # Generate all STL files from OBJ files
 stls: $(patsubst %.obj,%.stl,$(wildcard *.obj))
 
-# Clean generated files
+# Clean
 clean:
-	@rm -f $(TARGET_PNG) $(TARGET_STL) *.stl
-	@echo "Cleaned generated files"
+	@rm -f $(TARGET_STL) *.stl
+	@echo "Cleaned"
 
-# Help target
+# Help
 help:
-	@echo "Makefile targets:"
-	@echo "  make                - Generate index.stl from index.scad"
-	@echo "  make png            - Generate index.png from index.scad"
-	@echo "  make <file>.stl     - Generate STL from OBJ (e.g., make 2025-06-13.stl)"
-	@echo "  make stls           - Generate all STL files from OBJ files"
-	@echo "  make clean          - Remove generated files"
-	@echo "  make help           - Show this help message"
+	@echo "make              - Generate index.stl"
+	@echo "make <file>.stl   - STL from OBJ"
+	@echo "make stls         - All STLs from OBJs"
+	@echo "make clean        - Remove generated files"
 
-.PHONY: all png clean help stls
+.PHONY: all clean help stls
