@@ -1,0 +1,13 @@
+# Generated 3D files
+*.stl
+
+# Generated images
+index.png
+
+# Temporary files
+*.tmp
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db

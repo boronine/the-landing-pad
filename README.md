@@ -1,6 +1,6 @@
 # The Landing Pad
 
-![Landing Pad model](box.png)
+![Landing Pad model](index.png)
 
 The goal of this project is to produce a ["No Rights Reserved"](https://creativecommons.org/public-domain/cc0/) 3D model
 of the [world's first UFO Landing Pad](https://www.stpaul.ca/visitors/ufo-landing-pad), built in 1967 in the town of [St. Paul, Alberta, Canada](https://en.wikipedia.org/wiki/St._Paul,_Alberta)
@@ -22,6 +22,65 @@ Using a free trial of [poly.cam](https://poly.cam/) on iPhone I made a LiDAR sca
 This scan is using the camera without LiDAR. As it turns out this is more precise.
 
 ![Scan 2](2025-06-14-screenshot1.jpg)
+
+# Building
+
+## Dependencies
+
+- **OpenSCAD** - Only dependency for building (besides `make`)
+- **Make** - Typically pre-installed on Linux and macOS
+
+### Installing OpenSCAD
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt update
+sudo apt install openscad
+```
+
+**Linux (Fedora):**
+```bash
+sudo dnf install openscad
+```
+
+**macOS:**
+```bash
+brew install openscad
+```
+
+Or download from: <https://openscad.org/downloads.html>
+
+**Windows:**
+Download installer from: <https://openscad.org/downloads.html>
+
+### Platform Support for Make
+
+**Linux:** Make should be pre-installed or available through your package manager.
+
+**macOS:** Make should be pre-installed. If you get a "command not found" error, you may need to install Xcode command line tools with:
+```bash
+xcode-select --install
+```
+
+## Usage
+
+To build the 3D model and generate the rendered image:
+
+```bash
+make
+```
+
+To clean generated files:
+
+```bash
+make clean
+```
+
+To see all available targets:
+
+```bash
+make help
+```
 
 # Modeling a section of the fence
 
