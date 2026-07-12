@@ -9,10 +9,10 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
+# Cancel stale runs on the same branch, but never cancel main
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  group: ${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 jobs:
   build:
@@ -34,6 +34,7 @@ jobs:
           path: ./
 
   deploy:
+    if: github.ref_name == 'main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

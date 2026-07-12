@@ -1,0 +1,17 @@
+{
+  "name": "The Landing Pad",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:4": {}
+  },
+  "postCreateCommand": "openscad --version && make help",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Antyos.openscad"
+      ]
+    }
+  }
+}
