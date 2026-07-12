@@ -7,14 +7,16 @@
 
 # Target
 TARGET_STL = index.stl
-# Source
+# Main entry point
 SOURCE = index.scad
+# All .scad files as dependencies (auto-discovered)
+SOURCES = $(wildcard *.scad)
 
 # Default target
 all: $(TARGET_STL)
 
 # Generate STL from SCAD
-$(TARGET_STL): $(SOURCE)
+$(TARGET_STL): $(SOURCES)
 	@echo "Exporting $(SOURCE) to $(TARGET_STL)..."
 	openscad -o $(TARGET_STL) $(SOURCE)
 	@echo "Exported $(TARGET_STL)"
