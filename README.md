@@ -21,26 +21,7 @@ See [the older version of this README](https://github.com/notchia/the-landing-pa
 
 ### Installing OpenSCAD
 
-**Linux (Ubuntu/Debian):**
-```bash
-sudo apt update
-sudo apt install openscad
-```
-
-**Linux (Fedora):**
-```bash
-sudo dnf install openscad
-```
-
-**macOS:**
-```bash
-brew install openscad
-```
-
-Or download from: <https://openscad.org/downloads.html>
-
-**Windows:**
-Download installer from: <https://openscad.org/downloads.html>
+Snapshot releases are required (not the releases available in distro repos). Download from: <https://openscad.org/downloads.html>
 
 ### Platform Support for Make
 

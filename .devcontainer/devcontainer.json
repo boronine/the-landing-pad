@@ -11,7 +11,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "Antyos.openscad"
+        "Antyos.openscad",
+        "thingraph.cad-viewer"
       ]
     }
   }
