@@ -22,17 +22,17 @@ $(TARGET_STL): $(SOURCES)
 	@echo "Exported $(TARGET_STL)"
 
 # Wildcard rule: generate STL from OBJ
-%.stl: %.obj
+scans/%.stl: scans/%.obj
 	@echo "Converting $< to $@..."
 	@printf 'import("%s");\n' $< | openscad -o $@ -
 	@echo "Generated $@"
 
-# Generate all STL files from OBJ files
-stls: $(patsubst %.obj,%.stl,$(wildcard *.obj))
+# Generate all STL files from OBJ files in scans/
+stls: $(patsubst scans/%.obj,scans/%.stl,$(wildcard scans/*.obj))
 
 # Clean
 clean:
-	@rm -f $(TARGET_STL) *.stl
+	@rm -f $(TARGET_STL) *.stl scans/*.stl
 	@echo "Cleaned"
 
 # Help
