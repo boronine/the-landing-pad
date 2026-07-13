@@ -3,6 +3,9 @@
 // ============================================================================
 include <parameters.scad>
 
+rect_z = 20; // platform slab thickness
+platform_z = platform_top - ellipse_z / 2;
+
 // Platform (ellipse)
 translate([0, 0, platform_z]) {
     linear_extrude(height = ellipse_z, center = true)

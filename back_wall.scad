@@ -3,18 +3,32 @@
 // ============================================================================
 include <parameters.scad>
 
+// Convert parametric angle to geometric angle for angular cuts
+function param_to_geom(theta) = let(
+    g = atan2(b * sin(theta), a * cos(theta))
+) g < 0 ? g + 360 : g;
+
+// Helper: 2D pie-slice polygon for angular cutting
+module pie_slice(r, angle_start, angle_end) {
+    polygon(concat(
+        [[0, 0]],
+        [for (a = [angle_start : 1 : angle_end]) [r * cos(a), r * sin(a)]]
+    ));
+}
+
 // Wall-to-fence height ratio measured in IMG_0687.HEIC: 1680:600.
-// The fence height includes the gap between the fence and the platform (gap + section_width).
-wall_height = (gap + section_width) * 1680 / 600;
+// fence_span is the fence height including the gap between the fence and the platform.
+fence_span = gap + section_width;
+wall_fence_ratio = 1680 / 600;
+wall_height = fence_span * wall_fence_ratio;
 wall_thickness = section_height;
-// Roof depth measured from IMG_0727.PNG: outer wall thickness + 49cm span + roof-lip thickness
-// (section_height + 49 + section_height, i.e. 15.76 + 49 + 15.76).
-roof_depth = section_height + 49 + section_height;
+// Roof depth measured from IMG_0727.PNG: outer wall thickness + roof_span + roof-lip thickness
+// (section_height + roof_span + section_height).
+roof_span = 49; // cm
+roof_depth = section_height + roof_span + section_height;
 roof_thickness = section_height;
 lip_height = section_height;
 lip_thickness = section_height;
-
-platform_top = column_h + ellipse_z;
 
 // A hollow elliptical band, centered at z_center, extruded vertically and
 // clipped to the angular wedge between start_angle and end_angle.
@@ -34,10 +48,10 @@ module elliptical_band(z_center, height, outer_x, outer_y, inner_x, inner_y, sta
     }
 }
 
-// Covers the gap left by removed fence sections 8–12.
-// Boundaries are the midpoints between sections 7-8 and 12-13 to avoid overlap.
-back_wall_start = param_to_geom(find_theta(7.5 * target_arc, 0));
-back_wall_end   = param_to_geom(find_theta(12.5 * target_arc, 0));
+// Covers the gap left by removed fence sections (back_wall_first..back_wall_last).
+// Boundaries are the midpoints between the neighbouring sections to avoid overlap.
+back_wall_start = param_to_geom(find_theta((back_wall_first - 0.5) * target_arc, 0));
+back_wall_end   = param_to_geom(find_theta((back_wall_last + 0.5) * target_arc, 0));
 
 // Each top corner of the wall+roof+lip combo is sheared off by a single planar
 // cut (see IMG_0687.HEIC / IMG_0727.PNG). Facing the stairs (+X) with the wall
@@ -47,14 +61,15 @@ back_wall_end   = param_to_geom(find_theta(12.5 * target_arc, 0));
 //   - on the roof it starts only roof_cut_width in from the corner (a smaller
 //     bite), giving a steep — not 45° — bevel.
 combo_top = platform_top + wall_height + roof_thickness;   // top of the roof
-fence_top = platform_top + gap + section_width;            // top of a fence section incl. gap
+fence_top = platform_top + fence_span;                     // top of a fence section incl. gap
 // The wall's outer side edge sits where the pie-slice ray (geometric angle
 // back_wall_start) meets the outer ellipse scale([a, b]) circle(1).
 edge_r = 1 / sqrt(pow(cos(back_wall_start) / a, 2) + pow(sin(back_wall_start) / b, 2));
 edge_x = edge_r * cos(back_wall_start);
 edge_y = edge_r * sin(back_wall_start);
 // Roof cut width measured from the photos: 320 : 600 of the fence+gap height.
-roof_cut_width = (gap + section_width) * 320 / 600;
+roof_cut_ratio = 320 / 600;
+roof_cut_width = fence_span * roof_cut_ratio;
 cut_drop = combo_top - fence_top;                          // vertical span of the cut
 cut_tilt = atan2(cut_drop, roof_cut_width);                // steepness from horizontal
 
