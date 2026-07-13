@@ -1,5 +1,5 @@
 // 1000 was very slow on another machine
-$fn = 1000;
+$fn = 100;
 
 // Fence segment dimensions — all constants are expressed in terms of section_depth (the largest dimension)
 section_depth = 150; // cm

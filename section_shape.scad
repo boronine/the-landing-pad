@@ -2,8 +2,8 @@
 // FENCE SECTION SHAPE - Individual decorative fence section geometry
 // ============================================================================
 
-// Module libraries imported via `use` don't inherit the caller's variables,
-// so pull in the shared parameters here to keep the section dimensions defined.
+// NOTE: this file is always consumed via `use`, so this include never fires.
+// Variables from parameters.scad must be in scope at the call site (fence_sections.scad provides them).
 include <parameters.scad>
 
 module section_shape() {
