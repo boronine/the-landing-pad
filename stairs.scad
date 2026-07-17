@@ -40,14 +40,16 @@ translate([slope_start_x + total_run - slope_thickness, -slope_width / 2, 0])
 
 // Steps — equidistant, with the entrance platform acting as the 14th step:
 // tread surfaces are equally spaced in z, so the platform top is exactly one
-// rise above the last step. Each step's center sits on the slope line, so the
-// step intersects the slope and appears to rest on top of it.
+// rise above the last step. The staircase is anchored so the top step's near
+// face is flush with the platform edge — touching, but not overlapping — and
+// x spacing follows the slope's pitch so the steps rest on top of it.
 platform_top_z = platform_z + rect_z / 2;
 step_rise = platform_top_z / (num_steps + 1);
+step_dx = k * step_rise;  // horizontal spacing, parallel to the slope line
 color("lightyellow")
 for (i = [0 : num_steps - 1]) {
     sz = (i + 1) * step_rise - step_thickness / 2;  // tread at (i + 1) * rise
-    sx = slope_start_x + total_run - k * sz;        // center on the slope line
+    sx = platform_edge_x + step_run / 2 + (num_steps - 1 - i) * step_dx;
 
     step(sx, 0, sz, step_run, stair_width, step_thickness);
 }
