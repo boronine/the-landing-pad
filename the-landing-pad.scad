@@ -3,7 +3,7 @@
 
 include <column.scad>
 include <platform.scad>
-include <transition.scad>
+include <capital.scad>
 include <fence_sections.scad>
 include <back_wall.scad>
 include <stairs.scad>
