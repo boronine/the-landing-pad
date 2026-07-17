@@ -26,4 +26,34 @@ for (i = [0 : num_steps - 1]) {
         cube([step_run, stair_width, step_thickness], center = true);
 
     step_side_curve(sx, 0, sz, step_run, stair_width, step_thickness);
-}
+    }
+
+    // Quick-and-dirty concrete slope under the stairs (same width as ridge)
+    // Extends from platform entrance down to ground
+    // Measurements from site: run (width) 3.67 m (height matches bottom of entrance platform)
+    slope_width = 40;
+    measured_slope_run = 367;      // cm (3.67 m)
+    total_run = measured_slope_run;
+    slope_start_x = platform_edge_x;
+    slope_start_z = platform_z - rect_z / 2;  // bottom of entrance platform
+    slope_end_z = 0;
+
+    // Sloped bar: subtract a second identical triangle shifted down 51 cm vertically
+    slope_thickness = 51;  // cm, vertical height of remaining sloped bar
+    color("gray")
+    translate([slope_start_x, 0, 0])
+        rotate([90, 0, 0])
+            linear_extrude(height = slope_width, center = true, convexity = 4)
+                difference() {
+                    polygon(points = [
+                        [0, 0],
+                        [0, slope_start_z],
+                        [total_run, slope_end_z]
+                    ]);
+                    translate([0, -slope_thickness])
+                        polygon(points = [
+                            [0, 0],
+                            [0, slope_start_z],
+                            [total_run, slope_end_z]
+                        ]);
+                }
