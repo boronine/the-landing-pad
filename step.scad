@@ -2,11 +2,14 @@
 // STEP — A single stair step
 // ============================================================================
 // Each step is a box that is thin along Z, long along Y and narrow along X,
-// curving 90° upward at each end (along Y). `stair_width` is the total Y span
-// of the step, including the curved ends.
+// curving 90° upward at each end (along Y) and then continuing straight up.
+// `stair_width` is the total Y span of the step, including the curved ends.
+// `step_height` is the total Z extent of the step seen from the side, from
+// the bottom of the flat body to the top of the straight vertical ends.
 
-module step(x, y, z, step_run, stair_width, step_thickness) {
-    curve_radius = step_thickness * 7;
+module step(x, y, z, step_run, stair_width, step_thickness, step_height) {
+    // Curve radius: 7x thickness, reduced by 10%
+    curve_radius = step_thickness * 7 * 0.9;
 
     // Flat body width: total width minus the two curved ends. Each curved end
     // reaches curve_radius plus half a cross-section beyond the flat body.
@@ -16,9 +19,12 @@ module step(x, y, z, step_run, stair_width, step_thickness) {
     translate([x, y, z])
         cube([step_run, flat_width, step_thickness], center = true);
 
-    // 90° curved ends — traced from the body edge outward and up
+    // Top of the step, measured from the bottom of the flat body
+    top_z = z - step_thickness / 2 + step_height;
+
     n = 8;
     for (y_side = [-1, 1]) {
+        // 90° curved ends — traced from the body edge outward and up
         for (j = [0 : n - 1]) {
             a0 = j / n * 90;
             a1 = (j + 1) / n * 90;
@@ -33,5 +39,12 @@ module step(x, y, z, step_run, stair_width, step_thickness) {
                     cube([step_run, step_thickness, step_thickness], center = true);
             }
         }
+
+        // Straight vertical extension — continues from the top of the curve
+        // up to the step's full height
+        curve_end_y = y + y_side * (flat_width / 2 + curve_radius);
+        curve_end_z = z + curve_radius;
+        translate([x, curve_end_y, (curve_end_z + top_z) / 2])
+            cube([step_run, step_thickness, top_z - curve_end_z], center = true);
     }
 }
